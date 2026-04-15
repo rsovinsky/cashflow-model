@@ -2039,7 +2039,8 @@ function renderForecast(){
     ['Starting Cash Balance', fmt(S.startBalance), `As of ${S.startMonth}`, true, null],
   ];
   if(S.reservesBalance>0) tileArr.push(['Available Reserve', fmt(S.reservesBalance), 'Included in ending balance', true, null]);
-  const totalNop=Math.round(R.months.reduce((a,m)=>a+(m.nop||0),0));
+  const fcastM2=R.months.filter(m=>!m.isActual);
+  const totalNop=Math.round(fcastM2.reduce((a,m)=>a+(m.nop||0),0));
   tileArr.push(
     ['Projected Annual Revenue', fmt(annInc2), 'All 12 months', true, 'tile-inc'],
     ['Projected Annual Expenses', fmt(annExp2), 'All 12 months', true, 'tile-exp'],
