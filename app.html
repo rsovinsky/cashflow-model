@@ -1659,6 +1659,17 @@ CRITICAL: The "name" field in each change MUST exactly match one of the line ite
     const jsS=cleanedS.indexOf('{');const jeS=cleanedS.lastIndexOf('}');
     if(jsS===-1||jeS===-1) throw new Error('No JSON in scenario response');
     const parsed=JSON.parse(cleanedS.slice(jsS,jeS+1));
+    // Patch narrative to use engine-calculated revised ending balance
+    const engineScenEnd=calcScenarioEndBal();
+    if(engineScenEnd!==null&&parsed.revisedEndBal){
+      const aiAmt=parsed.revisedEndBal;
+      const fmtAI=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Math.abs(aiAmt));
+      const fmtEngine=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Math.abs(engineScenEnd));
+      const prefix=aiAmt<0?'-':'';
+      const prefixE=engineScenEnd<0?'-':'';
+      parsed.narrative=(parsed.narrative||'').replace(prefix+fmtAI,prefixE+fmtEngine);
+      parsed.revisedEndBal=engineScenEnd;
+    }
     ss({scenarioRunning:false, scenarioResult:parsed});
   } catch(err){
     ss({scenarioRunning:false, scenarioResult:{narrative:'Scenario analysis failed: '+err.message,changes:[],netMoImpact:0,revisedEndBal:0,risks:''}});
