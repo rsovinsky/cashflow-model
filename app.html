@@ -952,7 +952,7 @@ function renderExtractReview(){
   // Excluded items note
   const exclCard=dv('');
   exclCard.style.cssText='background:#F5F5F5;border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;margin-top:.75rem;font-size:12px;color:var(--ink3);line-height:1.6;';
-  exclCard.innerHTML='<strong>Items excluded from extracted totals (non-cash):</strong> Depreciation, unrealized investment gains/losses, endowment taxable dividends, and other non-cash accounting entries. These do not affect operating cash flow and are excluded by design. The gap between extracted total and QB reported total is typically explained by these exclusions.';
+  exclCard.innerHTML='<strong>Items excluded from extracted totals (non-cash):</strong> Depreciation, unrealized investment gains/losses, investment taxable dividends, and other non-cash accounting entries. These do not affect operating cash flow and are excluded by design. The gap between extracted total and QB reported total is typically explained by these exclusions.';
   wrap.appendChild(exclCard);
   wrap.appendChild(card);
 
@@ -1163,9 +1163,9 @@ function renderAssumptions(){
   dw1.appendChild(balInp2);f1.appendChild(dw1);pg.appendChild(f1);
 
   const f2=dv('pos-field');
-  f2.appendChild(tx('label','','Cash available in reserve'));
+  f2.appendChild(tx('label','','Cash +/- to add to Operating Cash'));
   f2.appendChild(tx('p','','')); // spacer
-  const dw2note=tx('p','','Schwab reserve and other non-operating cash (not included in cash flow)');dw2note.style.cssText='font-size:10px;color:var(--ink4);margin-bottom:4px;';
+  const dw2note=tx('p','','Positive to add cash to starting balance; negative to reduce it');dw2note.style.cssText='font-size:10px;color:var(--ink4);margin-bottom:4px;';
   f2.appendChild(dw2note);
   const dw2=dv('dollar-wrap');
   const resInp2=el('input',{type:'text',value:S.reservesBalance?Number(S.reservesBalance).toLocaleString('en-US'):'',placeholder:'0',
@@ -2049,7 +2049,7 @@ function renderForecast(){
   const tileArr=[
     ['Starting Cash Balance', fmt(S.startBalance), `As of ${S.startMonth}`, true, null],
   ];
-  if(S.reservesBalance>0) tileArr.push(['Available Reserve', fmt(S.reservesBalance), 'Included in ending balance', true, null]);
+  if(S.reservesBalance!==0) tileArr.push(['Cash Adjustment', fmt(S.reservesBalance), S.reservesBalance>0?'Added to starting balance':'Deducted from starting balance', S.reservesBalance>=0, null]);
   const fcastM2=R.months.filter(m=>!m.isActual);
   const totalNop=Math.round(fcastM2.reduce((a,m)=>a+(m.nop||0),0));
   tileArr.push(
