@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nonprofit Cash Flow Planner</title>
+<title>Cash Flow Planner</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -288,7 +288,7 @@ input[type=file]{display:none;}
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
     <div>
-      <h1>Nonprofit Cash Flow Planner</h1>
+      <h1>Cash Flow Planner</h1>
       <p class="tagline">Upload actuals · adjust forward months · model scenarios</p>
     </div>
   </header>
@@ -2039,9 +2039,15 @@ function renderForecast(){
     ['Starting Cash Balance', fmt(S.startBalance), `As of ${S.startMonth}`, true, null],
   ];
   if(S.reservesBalance>0) tileArr.push(['Available Reserve', fmt(S.reservesBalance), 'Included in ending balance', true, null]);
+  const totalNop=Math.round(R.months.reduce((a,m)=>a+(m.nop||0),0));
   tileArr.push(
     ['Projected Annual Revenue', fmt(annInc2), 'All 12 months', true, 'tile-inc'],
     ['Projected Annual Expenses', fmt(annExp2), 'All 12 months', true, 'tile-exp'],
+  );
+  if((S.oneTime&&S.oneTime.length)||(S.nonOpItems&&S.nonOpItems.length)){
+    tileArr.push(['One-time & Non-op Items', fmt(totalNop), totalNop>=0?'Net cash inflow':'Net cash outflow', totalNop>=0, null]);
+  }
+  tileArr.push(
     ['Projected Ending Balance', fmt(R.endBal), R.months[11]?.label||'', R.endBal>=0, 'tile-end'],
   );
   // Add scenario ending balance tile if scenario has been run
