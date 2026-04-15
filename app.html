@@ -2170,11 +2170,15 @@ function renderForecast(){
     if(S.nonOpItems&&S.nonOpItems.length){
       const nopTitle=tx('strong','','Non-operating cash items:');nopTitle.style.cssText='display:block;margin-top:8px;margin-bottom:4px;';
       itemList.appendChild(nopTitle);
+      const fcastMonthCount=R.months.filter(m=>!m.isActual).length;
       S.nonOpItems.forEach(o=>{
         const typeLabel=(NON_OP_TYPES.find(t=>t.value===o.type)||{label:o.type}).label;
         const sign=(NON_OP_TYPES.find(t=>t.value===o.type)||{sign:-1}).sign>0?'+':'-';
-        const monthStr=o.month?o.month:'recurring';
-        const p=tx('div','',`${o.desc||'(unnamed)'}: ${sign}${fmt(Number(o.amount||0))} (${typeLabel}) — ${monthStr}`);
+        const isRecurring=!o.month;
+        const perAmt=Number(o.amount||0);
+        const totalAmt=isRecurring?perAmt*fcastMonthCount:perAmt;
+        const monthStr=isRecurring?`recurring × ${fcastMonthCount} months = ${sign}${fmt(totalAmt)}`:o.month;
+        const p=tx('div','',`${o.desc||'(unnamed)'}: ${sign}${fmt(perAmt)} (${typeLabel}) — ${monthStr}`);
         p.style.cssText='padding:2px 8px;color:var(--ink2);';
         itemList.appendChild(p);
       });
