@@ -603,7 +603,7 @@ Rules:
 - endowmentBalance: total of ALL non-operating investment accounts (endowment + reserve funds combined). Set reservesBalance to 0.
 - qbIncTotal: total income for the full period shown in QB
 - qbExpTotal: total expenses for the full period shown in QB
-- aiNote: a clean 1-2 sentence human-readable summary. Format: "Source documents: Income statement [months] · Balance sheet as of [date]. Starting cash balance $[X] includes checking and savings. Endowment funds $[X] shown separately." Do NOT include variable names, technical references, or parenthetical negative numbers. Use plain English only.
+- aiNote: a clean 1-2 sentence human-readable summary. Format: "Source documents: Income statement [months] · Balance sheet as of [date]. Starting cash balance $[X] includes checking and savings. Non-operating funds $[X] shown separately." Do NOT use the word "endowment". Do NOT include variable names, technical references, or parenthetical negative numbers. Use plain English only.
 - For each line item, provide an array of monthly values matching the order of lockedMonths
 
 Return ONLY valid JSON, no markdown fences:
@@ -622,7 +622,7 @@ Return ONLY valid JSON, no markdown fences:
   ],
   "qbIncTotal": 125000,
   "qbExpTotal": 137000,
-  "aiNote": "Source: Income statement Jan–Mar 2026 · Balance sheet as of Mar 31 2026. Starting cash balance includes bank accounts and reserve funds. Endowment funds shown separately."
+  "aiNote": "Source: Income statement Jan–Mar 2026 · Balance sheet as of Mar 31 2026. Starting cash balance includes bank accounts and reserve funds. Non-operating funds shown separately."
 }`});
 
   try{
@@ -1219,6 +1219,9 @@ function renderAssumptions(){
     cleanNote=cleanNote.replace(/qbIncTotal[^.]*\.?\s*/g,'');
     cleanNote=cleanNote.replace(/qbExpTotal[^.]*\.?\s*/g,'');
     cleanNote=cleanNote.replace(/\s+/g,' ').trim();
+    cleanNote=cleanNote.replace(/[Ee]ndowment funds?/gi,'non-operating funds');
+    cleanNote=cleanNote.replace(/[Ee]ndowment/gi,'non-operating funds');
+    cleanNote=cleanNote.replace(/shown separately as non-operating funds funds/gi,'shown separately as non-operating funds');
     noteEl.textContent=cleanNote;posCard.appendChild(noteEl);}
   wrap.appendChild(posCard);
 
@@ -1232,6 +1235,7 @@ function renderAssumptions(){
   const incTbl=buildAssumptionTable(S.income,'income');
   incTbl.id='tbl-income';
   incCard.appendChild(incTbl);
+
   wrap.appendChild(incCard);
 
   // Expense table
@@ -1241,6 +1245,7 @@ function renderAssumptions(){
   const expTbl=buildAssumptionTable(S.expenses,'expenses');
   expTbl.id='tbl-expenses';
   expCard.appendChild(expTbl);
+
   wrap.appendChild(expCard);
 
   // Monthly net summary
