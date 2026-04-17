@@ -593,7 +593,7 @@ async function runExtract(){
   content.push({type:'text',text:`Extract all income and expense line items from these nonprofit financial statements.
 
 Rules:
-- Include every distinct line item. Keep payroll lines separate (salaries, taxes, benefits).
+- Include every distinct line item, even if all values are zero or blank. Keep payroll lines separate (salaries, taxes, benefits). Do NOT omit any row just because it has zero or low values.
 - Exclude depreciation and unrealized gains/losses (non-cash).
 - Sort each section alphabetically.
 - Extract the ACTUAL value for EACH individual month — do not average. If Jan=$0, Feb=$50000, Mar=$0, return those exact values.
@@ -629,7 +629,7 @@ Return ONLY valid JSON, no markdown fences:
     const resp=await fetch('/api/claude',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-session-token':window.__SESSION_TOKEN__||''},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:8000,messages:[{role:'user',content}]})
     });
     if(!resp.ok) throw new Error(`API ${resp.status}`);
     const data=await resp.json();
